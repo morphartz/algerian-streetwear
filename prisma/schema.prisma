@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String   @default("")
+  price       Int
+  salePrice   Int?
+  currency    String   @default("DZD")
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  variants    ProductVariant[]
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  color     String
+  size      String
+  sku       String   @unique
+  stock     Int      @default(0)
+  imageUrl  String?
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([productId, color, size])
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  wilaya    String
+  commune   String
+  address   String
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  orderNumber  String      @unique
+  customerId   String
+  status       OrderStatus @default(NEW)
+  subtotal     Int
+  deliveryFee  Int
+  total        Int
+  payment      PaymentType @default(COD)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  customer     Customer    @relation(fields: [customerId], references: [id])
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  name      String
+  color     String
+  size      String
+  quantity  Int
+  unitPrice Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  @@index([orderId])
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PREPARING
+  READY
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentType {
+  COD
+}
