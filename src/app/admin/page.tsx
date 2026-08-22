@@ -1,4 +1,6 @@
-import Link from "next/link"
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getAdminSession } from "@/lib/auth";
 
 const controls = [
   ["Products", "Create, edit, publish, variants, colors, sizes, stock"],
@@ -9,18 +11,26 @@ const controls = [
   ["Promotions", "Coupons, discounts, campaigns and free shipping"],
   ["Customization", "Mockups, templates, artwork and design requests"],
   ["Appearance", "Logo, colors, typography, header and footer"],
-]
+] as const;
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const session = await getAdminSession();
+  if (!session) redirect("/admin/login");
+
   return (
     <main className="admin-shell">
       <header className="admin-topbar">
         <Link className="brand" href="/">MORPH<span>ZY</span></Link>
         <span className="admin-label">CONTROL CENTER</span>
-        <Link className="admin-exit" href="/">View storefront →</Link>
+        <div>
+          <span className="admin-user">{session.email}</span>
+          <form action="/api/admin/logout" method="post" style={{ display: "inline" }}>
+            <button className="admin-exit" type="submit">Logout</button>
+          </form>
+        </div>
       </header>
       <section className="admin-hero">
-        <p className="eyebrow">ADMIN / OWNER</p>
+        <p className="eyebrow">ADMIN / {session.role}</p>
         <h1>Control the entire store.</h1>
         <p>One back office for products, orders, content, inventory, customization and the visual system.</p>
       </section>
@@ -35,10 +45,10 @@ export default function AdminPage() {
         ))}
       </section>
       <section className="admin-note">
-        <p className="eyebrow">SECURITY</p>
-        <h2>Private by default.</h2>
-        <p>Real admin authentication must be backed by your production auth/database credentials. Never put admin passwords in the frontend or repository.</p>
+        <p className="eyebrow">SESSION</p>
+        <h2>Authenticated.</h2>
+        <p>You are signed in as the owner. Module-specific permissions can now be layered onto the role system.</p>
       </section>
     </main>
-  )
+  );
 }

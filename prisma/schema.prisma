@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("Owner")
+  role         AdminRole @default(OWNER)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model Product {
   id          String   @id @default(cuid())
   name        String
@@ -73,6 +84,14 @@ model OrderItem {
   unitPrice Int
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   @@index([orderId])
+}
+
+enum AdminRole {
+  OWNER
+  ADMIN
+  DESIGNER
+  PRODUCTION
+  ORDER_MANAGER
 }
 
 enum OrderStatus {
