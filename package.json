@@ -1,19 +1,16 @@
 {
   "name": "algerian-streetwear",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/client": "^6.13.0",
+    "@supabase/ssr": "latest",
+    "@supabase/supabase-js": "latest",
     "next": "^15.4.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -26,12 +23,8 @@
     "@types/node": "^22.15.30",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
-    "prisma": "^6.13.0",
     "tailwindcss": "^4.1.12",
-    "tsx": "^4.19.2",
     "typescript": "^5.9.2"
   },
-  "engines": {
-    "node": ">=20"
-  }
+  "engines": {"node": ">=20"}
 }
